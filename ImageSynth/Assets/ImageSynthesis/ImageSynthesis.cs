@@ -156,16 +156,85 @@ public class ImageSynthesis : MonoBehaviour {
 	{
 		var renderers = Object.FindObjectsOfType<Renderer>();
 		var mpb = new MaterialPropertyBlock();
+		var cam = GetComponent<Camera>();
 		foreach (var r in renderers)
 		{
 			var id = r.gameObject.GetInstanceID();
 			var layer = r.gameObject.layer;
 			var tag = r.gameObject.tag;
+            var tf = r.gameObject.transform.position;
+			var sc = r.gameObject.transform.localScale;
+			var rot = r.gameObject.transform.rotation;
+			Debug.Log("Rotation: "+ rot);
+			// var bnd = r.gameObject.GetComponent<Renderer>().bounds.size;
+			var MESHbounds = r.gameObject.GetComponent<MeshFilter>().mesh.bounds.size;
+			var meshBounds = r.gameObject.GetComponent<MeshFilter>().mesh.bounds;
+			// float width = GetComponent<SpriteRenderer>().bounds.size.x;
+			Mesh mesh = r.gameObject.GetComponent<MeshFilter>().mesh;
+            Vector3[] vertices = mesh.vertices;
+            // Vector2[] uvs = new Vector2[vertices.Length];
+            Bounds bounds = mesh.bounds;
+        	int i = 0;
+			// float tfX = tf.x*sc.x;
+			// float tfY = tf.y*sc.y;
+			// float tfZ = tf.z*sc.z;
 
+			// Vector3 cam_tf = (rot * new Vector3(tfX, tfY, tfZ) ) ;
+			Vector3 mid_pt = cam.WorldToScreenPoint(tf);
+			File.AppendAllText(@"/home/prithvi/Desktop/random.csv", "\nimage_00000_img.png," + (int)mid_pt.x +", "+(int)(512-mid_pt.y) );
+        	while (i < vertices.Length) //https://docs.unity3d.com/ScriptReference/MeshFilter-mesh.html
+        	{
+        	    // uvs[i] = new Vector2(vertices[i].x / bounds.size.x, vertices[i].z / bounds.size.x);
+            	// Vector3 screenPos = cam.WorldToScreenPoint(tf);
+
+				// if (System.Math.Abs(vertices[i].x) == bounds.extents.x | System.Math.Abs(vertices[i].y) == bounds.extents.y |  System.Math.Abs(vertices[i].z) == bounds.extents.z ){
+					float scX = vertices[i].x*sc.x;
+					float scY = vertices[i].y*sc.y;
+					float scZ = vertices[i].z*sc.z;
+
+					Vector3 change = tf+ (rot * new Vector3(scX, scY, scZ) ) ;
+					Vector3 offset = cam.WorldToScreenPoint(change);
+
+					// float bx1X = screenPos.x + offset.x;
+					// float bx1Y = System.Math.Abs(512 - screenPos.y) + System.Math.Abs(512 - offset.y);
+					float bx1X = offset.x;
+					float bx1Y = System.Math.Abs(512 - offset.y);
+
+        			File.AppendAllText(@"/home/prithvi/Desktop/random.csv", ","+(int)bx1X+","+(int)bx1Y);
+				// }
+					i++;
+        	}
+
+
+        	// File.AppendAllText(@"/home/prithvi/Desktop/random.csv", "\n");
+        	// mesh.uv = uvs;
+
+            // Vector3 screenPos = cam.WorldToScreenPoint(tf);
+			// Vector3 minus = tf-MESHbounds;
+			// Vector3 plus = tf+MESHbounds;
+            // Vector3 pad1 = cam.WorldToScreenPoint(minus);
+            // Vector3 pad2 = cam.WorldToScreenPoint(plus);
+            // Vector3 scale= cam.WorldToScreenPoint(test);
+            // var abc = r.gameObject.GetMaterials();
+			// float bx1X = screenPos.x - test.x/2;
+			// float bx1Y = System.Math.Abs(512 - screenPos.y) - test.y/2;
+			// float bx2X = screenPos.x + test.x/2;
+			// float bx2Y = System.Math.Abs(512 - screenPos.y) + test.y/2;
+			// Debug.Log("Bounding Boxes: ("+bx1X+","+bx1Y+") and ("+ bx2X+","+bx2Y+")");
+			// string line = "Bounding Boxes: ("+pad1.x+","+System.Math.Abs(512f-pad1.y)+") and ("+ pad2.x+","+System.Math.Abs(512f-pad2.y)+")";
+			// line +=  " \n target is (" + screenPos.x +"," + System.Math.Abs(512-screenPos.y)  + ") pixels from the left for "+tf.ToString(); 
+        	// File.AppendAllText(@"/home/prithvi/Desktop/random.txt", line + "\n");
+			// Debug.Logline);
+			// Debug.Log(vertices.Length+ " ..... "+ vertices[0]+ "");
+
+			Debug.Log("Min: " +bounds.min + "   Max: "+ bounds.max+ "   Center: "+ bounds.center+ " Extents: "+bounds.extents);
 			mpb.SetColor("_ObjectColor", ColorEncoding.EncodeIDAsColor(id));
 			mpb.SetColor("_CategoryColor", ColorEncoding.EncodeLayerAsColor(layer));
 			r.SetPropertyBlock(mpb);
 		}
+		// Debug.Log((Object.FindObjectsOfType<GameObject>()).ToString());
+		// Scene scene = Object.FindObjectsOfType<GameObject>().scene;
+        // Debug.Log("  NAME: "+ Object.FindObjectsOfType<GameObject>().ToString());
 	}
 
 	public void Save(string filename, int width = -1, int height = -1, string path = "")
@@ -216,6 +285,8 @@ public class ImageSynthesis : MonoBehaviour {
 
 		var prevActiveRT = RenderTexture.active;
 		var prevCameraRT = cam.targetTexture;
+		
+		// Debug.Log(mainCamera);
 
 		// render to offscreen texture (readonly from CPU side)
 		RenderTexture.active = renderRT;
