@@ -8,6 +8,7 @@ public class sceneController : MonoBehaviour
     [SerializeField] private GameObject[] prefabs;
     [SerializeField] private int minObjects = 4;
     [SerializeField] private int maxObjects = 5;
+	private string save_results = @"/home/prithvi/Documents/git/image_synthesis_using_unity/results.csv";
     // Camera cam;
     // private GameObject[] createdObjects;
     private ShapePool pool;
@@ -30,86 +31,98 @@ public class sceneController : MonoBehaviour
     {
         // createdObjects = new GameObject[maxObjects];
         pool = ShapePool.Create(prefabs);
-        rend = GetComponent<Renderer>();
-        // cam = GetComponent<Camera>();
-        
-        GenerateRandom();
-        string filename = $"image_{frameCount.ToString().PadLeft(5, '0')}";
-        synth.Save(filename, 512, 512, "captures");
-        // Debug.Log(pool.pools);
-
-        string result = "List contents: ";
-        // foreach (var item in pool.pools)
-        // {
-        //     result += "\n" + item.ToString() + ", ";
-        //     // Debug.Log(item.GetType()+" \n");
-        // }
-        // foreach (KeyValuePair<ShapeLabel, List<Shape>> kvp in pool.pools)
-        // {
-        //     // Debug.Log( kvp.Key.ToString());
-        //     foreach (var item in kvp)
-        //     {
-        //     result += "\n" + item.ToString() + ", ";
-        //     }
-        // }
-        // Debug.Log(result);
-		Object[] allObjects = Object.FindObjectsOfType<ShapePool>();
-		// // Renderer renderer = Object.FindObjectsOfType<Renderer>();
-		// var renderers = Object.FindObjectsOfType<Renderer>();
-        // // Debug.Log(renderers.GetMaterials());
-        // foreach (var r in renderers)
-		// {
-		// 	var id = r.gameObject.GetInstanceID();
-		// 	var layer = r.gameObject.layer;
-		// 	var tag = r.gameObject.tag;
-        //     var tf = r.gameObject.transform.position;
-        //     Vector3 screenPos = cam.WorldToScreenPoint(tf);
-        //     // var abc = r.gameObject.GetMaterials();
-        //     Debug.Log( "target is " + tf.x + " pixels from the left for "+tf.ToString() );
-        // }
-
-        foreach (ShapePool go in allObjects)
-        {
-            // Debug.Log(string.Join(", ", go.active.GetType() ));
-            foreach (var item in go.active)
-            {
-                // obj =  item.obj;
-                int someLabel = (int)item.label;
-                result += "\n" + someLabel.ToString()+", "+ item.obj.transform.position.ToString() + ", ";
-            }
-            // Debug.Log(result);
-
-        //     // // Debug.Log(go.pools.ToString());// + " is an active object " + go.transform.ToString());
-        //     // Debug.Log(string.Join(", ", go.pools.pools));
-            
-        //     // foreach (KeyValuePair<ShapeLabel, List<Shape>> sp in go.pools)  
-        //     // {  
-        //     //     // Console.WriteLine("Key: {0}, Value: {1}",  
-        //     //     // author.Key, author.Value);  
-        //     //     // Debug.Log(sp.Key.ToString());
-        //     //     foreach (var item in sp.Value)
-        //     //     {
-        //     //         result += "\n "+ sp.Key.ToString() + string.Join(", ", sp.Value) + ", ";
-        //     //     }
-        //     //     Debug.Log(result);
-                
-            // }
-        
-
+        try{
+            if (System.IO.File.Exists(save_results))    
+            {    
+    	        System.IO.File.Delete(save_results);    
+            }    
         }
+        catch(System.Exception Ex){
+            Debug.Log(Ex.ToString());
+        }
+        // rend = GetComponent<Renderer>();
+        // // cam = GetComponent<Camera>();
+        
+        // GenerateRandom();
+        // string filename = $"image_{frameCount.ToString().PadLeft(5, '0')}";
+        // synth.Save(filename, 512, 512, "captures");
+        // // Debug.Log(pool.pools);
+
+        // string result = "List contents: ";
+        // // foreach (var item in pool.pools)
+        // // {
+        // //     result += "\n" + item.ToString() + ", ";
+        // //     // Debug.Log(item.GetType()+" \n");
+        // // }
+        // // foreach (KeyValuePair<ShapeLabel, List<Shape>> kvp in pool.pools)
+        // // {
+        // //     // Debug.Log( kvp.Key.ToString());
+        // //     foreach (var item in kvp)
+        // //     {
+        // //     result += "\n" + item.ToString() + ", ";
+        // //     }
+        // // }
+        // // Debug.Log(result);
+		// Object[] allObjects = Object.FindObjectsOfType<ShapePool>();
+		// // // Renderer renderer = Object.FindObjectsOfType<Renderer>();
+		// // var renderers = Object.FindObjectsOfType<Renderer>();
+        // // // Debug.Log(renderers.GetMaterials());
+        // // foreach (var r in renderers)
+		// // {
+		// // 	var id = r.gameObject.GetInstanceID();
+		// // 	var layer = r.gameObject.layer;
+		// // 	var tag = r.gameObject.tag;
+        // //     var tf = r.gameObject.transform.position;
+        // //     Vector3 screenPos = cam.WorldToScreenPoint(tf);
+        // //     // var abc = r.gameObject.GetMaterials();
+        // //     Debug.Log( "target is " + tf.x + " pixels from the left for "+tf.ToString() );
+        // // }
+
+        // foreach (ShapePool go in allObjects)
+        // {
+        //     // Debug.Log(string.Join(", ", go.active.GetType() ));
+        //     foreach (var item in go.active)
+        //     {
+        //         // obj =  item.obj;
+        //         int someLabel = (int)item.label;
+        //         result += "\n" + someLabel.ToString()+", "+ item.obj.transform.position.ToString() + ", ";
+        //     }
+        //     // Debug.Log(result);
+
+        // //     // // Debug.Log(go.pools.ToString());// + " is an active object " + go.transform.ToString());
+        // //     // Debug.Log(string.Join(", ", go.pools.pools));
+            
+        // //     // foreach (KeyValuePair<ShapeLabel, List<Shape>> sp in go.pools)  
+        // //     // {  
+        // //     //     // Console.WriteLine("Key: {0}, Value: {1}",  
+        // //     //     // author.Key, author.Value);  
+        // //     //     // Debug.Log(sp.Key.ToString());
+        // //     //     foreach (var item in sp.Value)
+        // //     //     {
+        // //     //         result += "\n "+ sp.Key.ToString() + string.Join(", ", sp.Value) + ", ";
+        // //     //     }
+        // //     //     Debug.Log(result);
+                
+        //     // }
+        
+
+        // }
         
     }
 
     // Update is called once per frame
     void Update()
     {
-        // if (frameCount % 45 == 0){
-        //     GenerateRandom();
-        // }
-        // frameCount++;
+        if (frameCount % 75 == 0){
+            string filename = $"image_{frameCount.ToString().PadLeft(5, '0')}";
+            GenerateRandom(filename);
+            synth.Save(filename, 512, 512, "captures", 1); //specific pass 
+            // specific pass; 1 _id, 2- layer, 3 depth, 4 normals, 5 flow, -1 for all
+        }
+        frameCount++;
     }
 
-    void GenerateRandom(){
+    void GenerateRandom(string filename){
 
         // for (int i=0; i < createdObjects.Length; i++){
         //     if (createdObjects[i] != null){
@@ -157,6 +170,6 @@ public class sceneController : MonoBehaviour
 
         }
     
-        synth.OnSceneChange();
+        synth.OnSceneChange(filename, save_results);
     }
 }
